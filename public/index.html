@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f2e9">
+  <meta name="description" content="A phone-friendly Don't Starve Together field guide. Compare food stats and trace ingredients through cooking, preparation, and crafting recipes.">
+  <title>The Constant — DST Field Guide</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preload" href="/assets/fonts/dm-sans-400.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="/src/style.css">
+  <script type="module" src="/src/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="app" class="app-shell">
+    <aside class="sidebar" aria-label="Guide navigation">
+      <a class="brand" href="#foods" aria-label="The Constant, food table">
+        <img src="/favicon.svg" width="39" height="39" alt="">
+        <span><strong>The Constant</strong><span>DST FIELD GUIDE</span></span>
+      </a>
+      <nav class="desktop-navigation" aria-label="Main">
+        <a href="#foods" data-nav="foods"><span class="nav-icon" data-icon="table"></span>Food table<span class="nav-count" id="nav-food-count"></span></a>
+        <a href="#explore/tomato" data-nav="explore"><span class="nav-icon" data-icon="tree"></span>Ingredient explorer</a>
+        <a href="#craft" data-nav="craft"><span class="nav-icon" data-icon="hammer"></span>Crafting & building</a>
+      </nav>
+      <div class="sidebar-note">
+        <span class="small-rule"></span>
+        <p>A little knowledge.<br>A little longer alive.</p>
+      </div>
+      <div class="sidebar-bottom">
+        <a href="#about" class="source-link" data-nav="about"><span data-icon="book"></span>About this guide</a>
+        <p>Don’t Starve Together only.<br><span id="sidebar-version">Loading game data…</span></p>
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="mobile-brand"><a href="#foods"><img src="/favicon.svg" width="29" height="29" alt=""><strong>The Constant</strong></a><a class="icon-button" href="#about" aria-label="About this guide"><span data-icon="info"></span></a></header>
+      <main id="main" tabindex="-1">
+        <div class="page-heading"><h1>Food table</h1><p>Know what’s worth a bite.</p></div>
+        <div class="loading-state" role="status"><div class="loading-search"></div><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div><p>Opening the field guide…</p></div>
+      </main>
+      <footer class="page-footer"><span>Survive a little smarter.</span><a href="#about">Data & credits <span data-icon="arrow"></span></a></footer>
+    </div>
+  </div>
+  <nav class="mobile-navigation" aria-label="Main">
+    <a href="#foods" data-nav="foods"><span data-icon="table"></span><span>Food table</span></a>
+    <a href="#explore/tomato" data-nav="explore"><span data-icon="tree"></span><span>Ingredients</span></a>
+    <a href="#craft" data-nav="craft"><span data-icon="hammer"></span><span>Crafting</span></a>
+  </nav>
+  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="noscript">Enable JavaScript to search, sort, and explore the DST reference data.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "build": "762172",
+  "channel": "release",
+  "counts": {
+    "aliases": 3,
+    "construction": 22,
+    "crafts": 978,
+    "foods": 664,
+    "ingredients": 155,
+    "items": 2510,
+    "recipes": 81,
+    "transforms": 691
+  },
+  "coverage": [
+    "All edible entries in the pinned survival-world scrapbook, plus prepared and seasoned dishes.",
+    "All Recipe/Recipe2 registrations in recipes.lua; construction plans are listed separately.",
+    "Crock Pot uses exhaust all four-slot combinations of available ingredient classes, for both pots.",
+    "Nutrition is fresh baseline, before character modifiers. Jellybean delayed healing is separate.",
+    "Creature feeding, farming, loot, and acquisition chains beyond the registered recipe menus are outside the use graph.",
+    "Registered shop recipes are available to inspect, but are not assumed as the source of ordinary crafting materials.",
+    "Character skill effects, dynamic yields, and placement rules are flagged; material totals use baseline yields.",
+    "Special-diet foods and seasonal foods remain identifiable; separate Forge/Gorge game modes are excluded."
+  ],
+  "game": "Don't Starve Together",
+  "ingredientClasses": 96,
+  "multisets": 3764376,
+  "repository": "CN-DST-DEVELOPER/scripts",
+  "revision": "c20cb323ca6686b3892f08bb40b3747ddb85231d",
+  "sourceDate": "2026-11-06T09:02:21Z",
+  "sources": {
+    "constants.lua": "bc819ea006d25e789ebe329dcc5ed6e53710886703223453bef86e3d46f98e41",
+    "cooking.lua": "40d5710ff004973841fa482637a55b10cd9ee81d72d1fe771cbe0767a74d7063",
+    "prefabs/oceanfishdef.lua": "0e182e1673c709b4b585b20c5f792b7088ae89a0666cf5b3eb1fd896bbe973f3",
+    "preparedfoods.lua": "250ee48697633b5ef32dd6a787bc94d5f2d8b9b3c19f415175db339c285872d5",
+    "preparedfoods_warly.lua": "951dc02c091183689a41f9c5b0c76abf11da15117024f8859990c205c13ae9bc",
+    "preparednonfoods.lua": "c74aaa4b326f801658788ef86188ca3130260087edcc1a50d73309bd89cf5519",
+    "recipes.lua": "7c8f6b73fed18c134e16e81ca8540bc530522bbf58325fc9e573bcf17852d1e9",
+    "recipes_filter.lua": "60f9de1fb717381f31c897235628690ee07c08f68b58facf8811c8e02eefcc2c",
+    "screens/redux/scrapbookdata.lua": "ccdd94144b750c0654f4f389703470e05c7425b69336e407e7ffe6f44e6b4fc6",
+    "spicedfoods.lua": "6ccaac6a0b37ca2aca5f93f999b04ddec4e9481f14d59eb7541dec0e1d4ee97d",
+    "strings.lua": "48562292694743fcac2057d70e74e9dc76b6115c06c3a6768be2973be69d5ebb",
+    "techtree.lua": "a98c86aca4cbb9ee1d9b33648af29822ad86edf4f55148723baaf5a86aab77d6",
+    "tuning.lua": "a5172ab9bc3b29a9fc59a6a399fd47a182ea0d25fedccb1292fe18e855b3b92c"
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.venv/
+.cache/
+.wrangler/
+.env
+.env.*
+__pycache__/
+*.pyc
+test-results/
+.openai/
