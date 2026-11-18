@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { Window } from 'happy-dom';
+import { runInThisContext } from 'node:vm';
+import { bundleApp } from '../scripts/bundle.mjs';
 
 // DOM integration checks complement the pure data tests. These do not claim
 // real-browser layout, font rendering, touch behavior, or viewport verification.
@@ -54,7 +56,11 @@ test('table, ingredient paths, and crafting remain connected through the UI', as
   };
 
   try {
-    await import('../src/app.mjs');
+    const script = doc.querySelector('script[src="/src/app.js"]');
+    assert.ok(script?.defer, 'The browser entry point is an external deferred script');
+    assert.equal(doc.querySelector('script[type="importmap"]'), null);
+    const { outputFiles: [app] } = await bundleApp();
+    runInThisContext(app.text, { filename: 'app.js' });
     await t.test('a failed initial data request offers a working retry', async () => {
       await settle(() => doc.querySelector('[data-retry-game]'));
       assert.match(doc.querySelector('main').textContent, /couldn’t open/);

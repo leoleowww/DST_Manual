@@ -27,4 +27,4 @@ The small interface icons are inline stroke SVGs in `src/icons.mjs`; they are se
 
 ## Localization library
 
-[i18next](https://www.i18next.com/) is distributed under the MIT License. The build includes its license alongside the browser module.
+[i18next](https://www.i18next.com/) is distributed under the MIT License. The build includes its license with the static assets.

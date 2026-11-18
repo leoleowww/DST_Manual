@@ -12,6 +12,7 @@
     "preview:upload": "npm run build && wrangler versions upload"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "happy-dom": "^21.0.4",
     "wrangler": "^4.0.0"
   },

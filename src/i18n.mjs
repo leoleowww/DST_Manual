@@ -24,7 +24,7 @@ const en = {
 };
 
 const i18n = i18next.createInstance();
-await i18n.init({
+export const i18nReady = i18n.init({
   lng: languages.includes(savedLanguage) ? savedLanguage : 'en',
   fallbackLng: 'en',
   supportedLngs: languages,

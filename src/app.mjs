@@ -1,6 +1,6 @@
 import { createModel, cookingOutcomes, characterName as gameCharacter, stationName as gameStation, METHODS, title } from './domain.mjs';
 import { icon } from './icons.mjs';
-import { language, languages, setLanguage, t } from './i18n.mjs';
+import { i18nReady, language, languages, setLanguage, t } from './i18n.mjs';
 import { ruleHTML } from './recipe-rules.mjs';
 
 const main = document.querySelector('#main');
@@ -189,7 +189,7 @@ function verifiedExample(id, cooker) {
 function sourceLinks(id, recipe = data.recipes[id]) {
   const source = recipe ? `${recipe.source}#L${recipe.line}` : data.foods[id]?.base ? 'spicedfoods.lua' : 'screens/redux/scrapbookdata.lua';
   const url = `https://github.com/${data.meta.repository}/blob/${data.meta.revision}/${source}`;
-  return `<div class="source-links"><a href="${escape(url)}" target="_blank" rel="noopener">${msg("Game source")} ${icon('external')}</a><a href="https://dontstarve.wiki.gg/wiki/${encodeURIComponent((data.items[id]?.name || title(id)).replaceAll(' ', '_'))}" target="_blank" rel="noopener">${msg("Read more on the wiki")} ${icon('external')}</a></div>`;
+  return `<div class="source-links"><a href="${escape(url)}" target="_blank" rel="noopener">${msg("Game source")} ${icon('external')}</a><a href="https://dontstarve.wiki.gg/wiki/${encodeURIComponent((data.items[id]?.name || title(id)).replace(/ /g, '_'))}" target="_blank" rel="noopener">${msg("Read more on the wiki")} ${icon('external')}</a></div>`;
 }
 
 function renderFoodDetail(id) {
@@ -508,6 +508,8 @@ function renderGameError() {
 
 async function loadGame() {
   try {
+    await i18nReady;
+    renderShell();
     const responses = await Promise.all([fetch('/data/game-data.json'), fetch('/data/art.json')]);
     if (responses.some(r => !r.ok)) throw new Error('The guide data is unavailable.');
     [data, art] = await Promise.all(responses.map(r => r.json()));
@@ -524,5 +526,4 @@ async function loadGame() {
 }
 
 for (const element of document.querySelectorAll('[data-icon]')) element.innerHTML = icon(element.dataset.icon);
-renderShell();
 loadGame();

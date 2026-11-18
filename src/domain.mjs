@@ -26,7 +26,7 @@ export const STATIONS = {
   LOST: 'Blueprint / special unlock',
 };
 export const truthy = value => value !== null && value !== undefined && value !== false;
-export const title = value => String(value ?? '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+export const title = value => String(value ?? '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 export const normalize = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export function evaluateRule(node, names, tags, cooker = 'cookpot') {
