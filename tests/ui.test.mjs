@@ -114,6 +114,13 @@ test('table, ingredient paths, and crafting remain connected through the UI', as
       const recipe = expand('[data-branch-kind="recipe"][data-target="talleggs"]');
       assert.equal(recipe.querySelectorAll(':scope > .branch-body > .combo .combo-item').length, 4);
       assert.ok(recipe.querySelector('.combo-item.selected').href.includes('tallbirdegg'));
+      const bacon = expand('[data-branch-kind="recipe"][data-target="baconeggs"]');
+      const formula = bacon.querySelector(':scope > .branch-body > .rules');
+      assert.deepEqual([...formula.querySelectorAll('.rule-expression')].map(el => el.textContent), [
+        'Egg value > 1', 'Meat value > 1', 'Vegetable value = 0',
+      ]);
+      assert.equal(formula.querySelectorAll('.rule-expression img').length, 3);
+      assert.ok(formula.querySelector('.rule-totals img[src$="/tallbirdegg.png"]'));
       const transform = expand('[data-branch-kind="transform"][data-target="tallbirdegg_cooked"]');
       assert.match(transform.querySelector('.deeper-tree').textContent, /Direct pot recipes/);
       const tied = expand('[data-branch-kind="recipe"][data-target="jammypreserves"]');
@@ -154,6 +161,26 @@ test('table, ingredient paths, and crafting remain connected through the UI', as
       assert.match(doc.querySelector('main').textContent, /762172/);
       assert.match(doc.querySelector('main').textContent, /not a live connection/);
       await navigate('#food/nonexistent-item', () => doc.querySelector('main').textContent.includes('wandered off'));
+    });
+
+    await t.test('Traditional Chinese localizes the current route and supports bilingual search', async () => {
+      await navigate('#foods', () => Boolean(doc.querySelector('#food-search')));
+      change('[data-language]', 'zh-TW');
+      await settle(() => doc.querySelector('main h1')?.textContent === '食物一覽');
+      assert.equal(doc.documentElement.lang, 'zh-TW');
+      assert.equal(window.localStorage.getItem('dst-guide-language'), 'zh-TW');
+
+      input('#food-search', '波蘭水餃');
+      assert.match(doc.querySelector('#food-rows').textContent, /波蘭水餃/);
+      input('#food-search', 'pierogi');
+      assert.match(doc.querySelector('#food-rows').textContent, /波蘭水餃/);
+
+      await navigate('#food/perogies', () => doc.querySelector('main h1')?.textContent === '波蘭水餃');
+      assert.match(doc.querySelector('.rule-list').textContent, /蔬菜值 ≥ 0.5/);
+      assert.match(doc.querySelector('.source-links a:last-child').href, /\/wiki\/Pierogi$/);
+      change('[data-language]', 'en');
+      await settle(() => doc.querySelector('main h1')?.textContent === 'Pierogi');
+      assert.equal(doc.documentElement.lang, 'en');
     });
 
     assert.equal(errors.length, 0, 'No unexpected UI runtime errors');

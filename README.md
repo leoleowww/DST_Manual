@@ -37,7 +37,7 @@ npx wrangler login
 npm run deploy
 ```
 
-Use your own Cloudflare account. Change `name` in `wrangler.jsonc` if `dst-field-guide` conflicts with an existing Worker in that account. Wrangler returns the deployed URL. You can attach a custom domain in Cloudflare afterward.
+Use your own Cloudflare account. Change `name` in `wrangler.jsonc` if `dst-manual` conflicts with an existing Worker in that account. Wrangler returns the deployed URL. You can attach a custom domain in Cloudflare afterward.
 
 To prepare a non-production version for review:
 

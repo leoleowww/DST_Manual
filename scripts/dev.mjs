@@ -3,14 +3,15 @@ import { readFile, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const root = fileURLToPath(new URL('../', import.meta.url));
+const root = path.resolve(fileURLToPath(new URL('../', import.meta.url)));
 const mime = { '.html': 'text/html; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.ico': 'image/x-icon' };
 const server = http.createServer(async (req, res) => {
   try {
     const requestPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
     const base = requestPath.startsWith('/src/') ? root : path.join(root, 'public');
-    let file = path.resolve(base, '.' + (requestPath === '/' ? '/index.html' : requestPath));
-    if (!file.startsWith(base + path.sep)) { res.writeHead(403).end(); return; }
+    const vendor = requestPath === '/vendor/i18next.mjs';
+    let file = vendor ? path.join(root, 'node_modules/i18next/dist/esm/i18next.js') : path.resolve(base, '.' + (requestPath === '/' ? '/index.html' : requestPath));
+    if (!vendor && !file.startsWith(base + path.sep)) { res.writeHead(403).end(); return; }
     if ((await stat(file)).isDirectory()) file = path.join(file, 'index.html');
     const body = await readFile(file);
     res.writeHead(200, { 'Content-Type': mime[path.extname(file)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' });

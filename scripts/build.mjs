@@ -14,4 +14,7 @@ await rm(path.join(root, 'dist'), { recursive: true, force: true });
 await mkdir(path.join(root, 'dist'), { recursive: true });
 await cp(path.join(root, 'public'), path.join(root, 'dist'), { recursive: true });
 await cp(path.join(root, 'src'), path.join(root, 'dist/src'), { recursive: true });
+await mkdir(path.join(root, 'dist/vendor'), { recursive: true });
+await cp(path.join(root, 'node_modules/i18next/dist/esm/i18next.js'), path.join(root, 'dist/vendor/i18next.mjs'));
+await cp(path.join(root, 'node_modules/i18next/LICENSE'), path.join(root, 'dist/vendor/i18next-LICENSE.txt'));
 console.log(`Built DST Field Guide: ${Object.keys(data.foods).length} foods, ${data.crafts.length} crafting recipes. Output: dist/`);

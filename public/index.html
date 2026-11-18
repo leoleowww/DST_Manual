@@ -9,45 +9,46 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preload" href="/assets/fonts/dm-sans-400.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="/src/style.css">
+  <script type="importmap">{"imports":{"i18next":"/vendor/i18next.mjs"}}</script>
   <script type="module" src="/src/app.mjs"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main"><span data-i18n>Skip to content</span></a>
   <div id="app" class="app-shell">
-    <aside class="sidebar" aria-label="Guide navigation">
-      <a class="brand" href="#foods" aria-label="The Constant, food table">
+    <aside class="sidebar" aria-label="Guide navigation" data-i18n-label>
+      <a class="brand" href="#foods" aria-label="The Constant, food table" data-i18n-label>
         <img src="/favicon.svg" width="39" height="39" alt="">
-        <span><strong>The Constant</strong><span>DST FIELD GUIDE</span></span>
+        <span><strong data-i18n>The Constant</strong><span data-i18n>DST FIELD GUIDE</span></span>
       </a>
-      <nav class="desktop-navigation" aria-label="Main">
-        <a href="#foods" data-nav="foods"><span class="nav-icon" data-icon="table"></span>Food table<span class="nav-count" id="nav-food-count"></span></a>
-        <a href="#explore/tomato" data-nav="explore"><span class="nav-icon" data-icon="tree"></span>Ingredient explorer</a>
-        <a href="#craft" data-nav="craft"><span class="nav-icon" data-icon="hammer"></span>Crafting & building</a>
+      <nav class="desktop-navigation" aria-label="Main" data-i18n-label>
+        <a href="#foods" data-nav="foods"><span class="nav-icon" data-icon="table"></span><span data-i18n>Food table</span><span class="nav-count" id="nav-food-count"></span></a>
+        <a href="#explore/tomato" data-nav="explore"><span class="nav-icon" data-icon="tree"></span><span data-i18n>Ingredient explorer</span></a>
+        <a href="#craft" data-nav="craft"><span class="nav-icon" data-icon="hammer"></span><span data-i18n>Crafting & building</span></a>
       </nav>
       <div class="sidebar-note">
         <span class="small-rule"></span>
-        <p>A little knowledge.<br>A little longer alive.</p>
+        <p><span data-i18n>A little knowledge.</span><br><span data-i18n>A little longer alive.</span></p>
       </div>
       <div class="sidebar-bottom">
-        <a href="#about" class="source-link" data-nav="about"><span data-icon="book"></span>About this guide</a>
-        <p>Don’t Starve Together only.<br><span id="sidebar-version">Loading game data…</span></p>
+        <select class="select-control language-select" data-language aria-label="Language" data-i18n-label><option value="en">English</option><option value="zh-TW" lang="zh-TW">繁體中文</option></select>
+        <a href="#about" class="source-link" data-nav="about"><span data-icon="book"></span><span data-i18n>About this guide</span></a>
+        <p><span data-i18n>Don’t Starve Together only.</span><br><span id="sidebar-version" data-i18n>Loading game data…</span></p>
       </div>
     </aside>
     <div class="workspace">
-      <header class="mobile-brand"><a href="#foods"><img src="/favicon.svg" width="29" height="29" alt=""><strong>The Constant</strong></a><a class="icon-button" href="#about" aria-label="About this guide"><span data-icon="info"></span></a></header>
+      <header class="mobile-brand"><a href="#foods"><img src="/favicon.svg" width="29" height="29" alt=""><strong data-i18n>The Constant</strong></a><div class="mobile-tools"><select class="select-control language-select" data-language aria-label="Language" data-i18n-label><option value="en">English</option><option value="zh-TW" lang="zh-TW">繁體中文</option></select><a class="icon-button" href="#about" aria-label="About this guide" data-i18n-label><span data-icon="info"></span></a></div></header>
       <main id="main" tabindex="-1">
-        <div class="page-heading"><h1>Food table</h1><p>Know what’s worth a bite.</p></div>
-        <div class="loading-state" role="status"><div class="loading-search"></div><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div><p>Opening the field guide…</p></div>
+        <div class="page-heading"><h1 data-i18n>Food table</h1><p data-i18n>Know what’s worth a bite.</p></div>
+        <div class="loading-state" role="status"><div class="loading-search"></div><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div><p data-i18n>Opening the field guide…</p></div>
       </main>
-      <footer class="page-footer"><span>Survive a little smarter.</span><a href="#about">Data & credits <span data-icon="arrow"></span></a></footer>
+      <footer class="page-footer"><span data-i18n>Survive a little smarter.</span><a href="#about"><span data-i18n>Data & credits</span> <span data-icon="arrow"></span></a></footer>
     </div>
   </div>
-  <nav class="mobile-navigation" aria-label="Main">
-    <a href="#foods" data-nav="foods"><span data-icon="table"></span><span>Food table</span></a>
-    <a href="#explore/tomato" data-nav="explore"><span data-icon="tree"></span><span>Ingredients</span></a>
-    <a href="#craft" data-nav="craft"><span data-icon="hammer"></span><span>Crafting</span></a>
+  <nav class="mobile-navigation" aria-label="Main" data-i18n-label>
+    <a href="#foods" data-nav="foods"><span data-icon="table"></span><span data-i18n>Food table</span></a>
+    <a href="#explore/tomato" data-nav="explore"><span data-icon="tree"></span><span data-i18n>Ingredients</span></a>
+    <a href="#craft" data-nav="craft"><span data-icon="hammer"></span><span data-i18n>Crafting</span></a>
   </nav>
-  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">Enable JavaScript to search, sort, and explore the DST reference data.</p></noscript>
 </body>
 </html>

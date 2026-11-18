@@ -94,22 +94,7 @@ export function useType(item, recipe, data) {
   return ruleReferences(recipe.rule, 'tags', false).some(tag => tags[tag]) ? 'value' : 'filler';
 }
 
-export function describeRule(node, data) {
-  const [op, a, b] = node;
-  const labels = { veggie: 'vegetable', egg: 'egg', meat: 'meat', fish: 'fish', sweetener: 'sweetener', inedible: 'inedible', dairy: 'dairy', fruit: 'fruit', monster: 'monster', fat: 'fat', frozen: 'frozen', seed: 'seed', magic: 'magic', decoration: 'decoration' };
-  const itemName = key => data.items[key]?.name || data.items[Object.keys(data.aliases).find(alias => data.aliases[alias] === key)]?.name || title(key);
-  if (op === 'ref') return a === 'names' ? itemName(b) : `${labels[b] || b} value`;
-  if (op === 'literal') return a === true ? 'Any four valid ingredients' : String(a ?? 'none');
-  if (op === 'cooker') return 'cooking station';
-  if (op === 'not') return `no ${describeRule(a, data).replace(' value', '')}`;
-  if (op === 'neg') return `−${describeRule(a, data)}`;
-  const left = describeRule(a, data), right = describeRule(b, data);
-  if (op === 'and') return `${left}; ${right}`;
-  if (op === 'or') return `(${left} or ${right})`;
-  return `(${left} ${{ '>=': '≥', '<=': '≤', '==': '=', '~=': '≠' }[op] || op} ${right})`;
-}
-
-export function createModel(data, uses = {}) {
+export function createModel(data, uses = {}, localization = {}) {
   const byProduct = new Map(), consumers = new Map(), transforms = new Map();
   for (const recipe of data.crafts) {
     if (!byProduct.has(recipe.product)) byProduct.set(recipe.product, []);
@@ -124,8 +109,9 @@ export function createModel(data, uses = {}) {
     transforms.get(transform.from).push(transform);
   }
   const byCraftId = new Map(data.crafts.map(recipe => [recipe.id, recipe]));
-  const name = id => data.items[id]?.name || title(id);
-  const matches = (id, query) => normalize(`${name(id)} ${id} ${data.items[id]?.description || ''}`).includes(normalize(query).trim());
+  const name = id => localization.items?.()?.[id]?.name || data.items[id]?.name || title(id);
+  const compareNames = (a, b) => name(a).localeCompare(name(b), localization.language?.());
+  const matches = (id, query) => normalize(`${name(id)} ${data.items[id]?.name || ''} ${localization.items?.()?.[id]?.description || ''} ${id} ${data.items[id]?.description || ''}`).includes(normalize(query).trim());
   const recipeScore = recipe => (recipe.builder_tag || recipe.builder_skill ? 100 : 0) + (recipe.event ? 200 : 0) + (recipe.manufactured ? 50 : 0) + (recipe.id.startsWith('transmute_') ? 300 : 0);
   for (const entries of byProduct.values()) entries.sort((a, b) => recipeScore(a) - recipeScore(b) || a.id.localeCompare(b.id));
   const routine = (recipe, character) => !recipe.event && !recipe.manufactured && !recipe.limitedamount && !recipe.tech.includes('SHOP') && !recipe.id.startsWith('transmute_') && (!characterName(recipe) || characterName(recipe) === character);
@@ -146,17 +132,17 @@ export function createModel(data, uses = {}) {
         return true;
       });
       return list.sort((a, b) => {
-        const primary = sort === 'name' ? name(a.id).localeCompare(name(b.id)) : (a[sort] - b[sort]);
-        return (direction === 'asc' ? primary : -primary) || name(a.id).localeCompare(name(b.id)) || a.id.localeCompare(b.id);
+        const primary = sort === 'name' ? compareNames(a.id, b.id) : (a[sort] - b[sort]);
+        return (direction === 'asc' ? primary : -primary) || compareNames(a.id, b.id) || a.id.localeCompare(b.id);
       });
     },
     directUses(id, cooker = 'cookpot') {
-      return Object.entries(this.uses[cooker]?.[id] || {}).map(([rid, witness]) => ({ recipe: data.recipes[rid], witness, type: useType(id, data.recipes[rid], data) })).sort((a, b) => ['named', 'value', 'filler'].indexOf(a.type) - ['named', 'value', 'filler'].indexOf(b.type) || name(a.recipe.id).localeCompare(name(b.recipe.id)));
+      return Object.entries(this.uses[cooker]?.[id] || {}).map(([rid, witness]) => ({ recipe: data.recipes[rid], witness, type: useType(id, data.recipes[rid], data) })).sort((a, b) => ['named', 'value', 'filler'].indexOf(a.type) - ['named', 'value', 'filler'].indexOf(b.type) || compareNames(a.recipe.id, b.recipe.id));
     },
     items(query = '', { ingredientsOnly = false } = {}) {
       return Object.keys(data.items).filter(id => matches(id, query) && (!ingredientsOnly || this.uses.cookpot?.[id] || consumers.has(id) || transforms.has(id))).sort((a, b) => {
         const exactA = normalize(name(a)) === normalize(query) || a === normalize(query), exactB = normalize(name(b)) === normalize(query) || b === normalize(query);
-        return Number(exactB) - Number(exactA) || Number(Boolean(data.foods[b])) - Number(Boolean(data.foods[a])) || name(a).localeCompare(name(b));
+        return Number(exactB) - Number(exactA) || Number(Boolean(data.foods[b])) - Number(Boolean(data.foods[a])) || compareNames(a, b);
       });
     },
     materials(recipe, quantity = 1) {
@@ -191,7 +177,7 @@ export function createModel(data, uses = {}) {
         }
       };
       consume(recipe.product, quantity, new Set(), recipe);
-      return { materials: [...materials].map(([id, amount]) => ({ id, amount })).sort((a, b) => name(a.id).localeCompare(name(b.id))), surplus: [...surplus].filter(([, amount]) => amount > 0).map(([id, amount]) => ({ id, amount })), stations: [...stations].sort(), tools: [...tools], warnings: [...warnings], batches };
+      return { materials: [...materials].map(([id, amount]) => ({ id, amount })).sort((a, b) => compareNames(a.id, b.id)), surplus: [...surplus].filter(([, amount]) => amount > 0).map(([id, amount]) => ({ id, amount })), stations: [...stations].sort(), tools: [...tools], warnings: [...warnings], batches };
     },
   };
 }

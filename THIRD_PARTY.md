@@ -6,6 +6,8 @@ Don't Starve Together, its original game data, item names, and inventory artwork
 
 The recipe and nutrition dataset is derived from the game-script snapshot archived at [CN-DST-DEVELOPER/scripts](https://github.com/CN-DST-DEVELOPER/scripts), pinned to build 762172 and revision `c20cb323ca6686b3892f08bb40b3747ddb85231d`. Source links appear in the app. The original Lua source is fetched for development-time extraction and is not bundled into the deployed app.
 
+Traditional Chinese item text comes from the same snapshot’s [game localization catalog](https://github.com/CN-DST-DEVELOPER/scripts/blob/c20cb323ca6686b3892f08bb40b3747ddb85231d/languages/chinese_t.po). Run `python scripts/import_zh_tw.py` after updating the game data to refresh the extracted catalog.
+
 Inventory artwork is mirrored from [fankimm/dst-craft](https://github.com/fankimm/dst-craft), revision `12c58d86ccf8490169f13132e8fb22ae62c8aacf`. The art is original game inventory imagery, not newly commissioned artwork. `data/assets-lock.json` records the upstream file hashes, and `scripts/fetch_assets.py` verifies downloaded blobs against them.
 
 Some images for newer items are absent from that mirror. They use the guide's neutral fallback icon. Seasoned foods reuse their unseasoned dish's image.
@@ -22,3 +24,7 @@ DM Sans and Fraunces are distributed under the **SIL Open Font License 1.1**. Th
 ## Interface icons
 
 The small interface icons are inline stroke SVGs in `src/icons.mjs`; they are separate from the game inventory artwork. The guide's leaf favicon is an authored vector mark.
+
+## Localization library
+
+[i18next](https://www.i18next.com/) is distributed under the MIT License. The build includes its license alongside the browser module.
