@@ -10,7 +10,7 @@ Traditional Chinese item text comes from the same snapshot’s [game localizatio
 
 Inventory artwork is mirrored from [fankimm/dst-craft](https://github.com/fankimm/dst-craft), revision `12c58d86ccf8490169f13132e8fb22ae62c8aacf`. The art is original game inventory imagery, not newly commissioned artwork. `data/assets-lock.json` records the upstream file hashes, and `scripts/fetch_assets.py` verifies downloaded blobs against them.
 
-Some images for newer items are absent from that mirror. They use the guide's neutral fallback icon. Seasoned foods reuse their unseasoned dish's image.
+`data/art-aliases.json` maps item IDs to the corresponding textures in the same pinned mirror. Refresh those files with `python scripts/fetch_assets.py --supplemental-art`. For items absent from the local artwork, the guide displays thumbnails directly from the [Don’t Starve Wiki on wiki.gg](https://dontstarve.wiki.gg/). `src/wiki-art.mjs` records the source paths, and item details link to the wiki file pages. The wiki’s Creative Commons notice covers its page content subject to exceptions. Its fair-use image notices do not grant a Creative Commons license for the game artwork. The guide uses a neutral fallback if a thumbnail is unavailable. Seasoned foods reuse their unseasoned dish’s image.
 
 ## Fonts
 

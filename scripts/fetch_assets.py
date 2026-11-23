@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fetch original game inventory art and self-hosted OFL fonts with provenance."""
+import argparse
 import concurrent.futures
 import hashlib
 import json
@@ -16,6 +17,9 @@ def get(url):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--supplemental-art", action="store_true", help="Fetch only the audited artwork overrides.")
+    args = parser.parse_args()
     lock_path = ROOT / "data/assets-lock.json"
     if lock_path.exists():
         lock = json.loads(lock_path.read_text())
@@ -31,6 +35,10 @@ def main():
     need.update(t["from"] for t in data["transforms"])
     need.update(t["to"] for t in data["transforms"])
     need.update(["tomato", "tallbirdegg", "honey", "boards", "cookpot", "log", "twigs", "charcoal"])
+    overrides = set(json.loads((ROOT / "data/art-aliases.json").read_text()).values())
+    if not overrides <= lock["files"].keys():
+        raise ValueError("An artwork override is missing from the pinned inventory source.")
+    need = overrides if args.supplemental_art else need | overrides
     target = ROOT / "public/assets/items"
     target.mkdir(exist_ok=True, parents=True)
 
@@ -56,6 +64,9 @@ def main():
     available = sorted(p.stem for p in target.glob("*.png"))
     (ROOT / "public/data/art.json").write_text(json.dumps(available, separators=(",", ":")) + "\n")
     print(f"Inventory art: {len(available)} available; {len(missing)} use the neutral fallback", flush=True)
+
+    if args.supplemental_art:
+        return
 
     fonts = ROOT / "public/assets/fonts"
     fonts.mkdir(exist_ok=True, parents=True)

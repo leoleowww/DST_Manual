@@ -189,6 +189,20 @@ test('table, ingredient paths, and crafting remain connected through the UI', as
       assert.equal(doc.documentElement.lang, 'en');
     });
 
+    await t.test('missing item artwork uses wiki thumbnails with source links and a fallback', async () => {
+      await navigate('#food/onion', () => Boolean(doc.querySelector('.item-heading [data-wiki-art]')));
+      const image = doc.querySelector('.item-heading img');
+      assert.equal(new URL(image.src).hostname, 'dontstarve.wiki.gg');
+      assert.equal(new URL(image.src).pathname, '/images/Onion.png');
+      assert.equal(image.getAttribute('referrerpolicy'), 'no-referrer');
+      assert.ok(doc.querySelector('.source-links a[href="https://dontstarve.wiki.gg/wiki/File:Onion.png"]'));
+      image.dispatchEvent(new window.Event('error'));
+      assert.ok(doc.querySelector('.item-heading .item-placeholder svg'));
+
+      await navigate('#craft/chesspiece_anchor_builder', () => Boolean(doc.querySelector('#craft-quantity')));
+      assert.equal(doc.querySelector('.item-heading img').getAttribute('src'), '/assets/items/chesspiece_anchor.png');
+    });
+
     assert.equal(errors.length, 0, 'No unexpected UI runtime errors');
   } finally {
     globalThis.fetch = originalFetch;

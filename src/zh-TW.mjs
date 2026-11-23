@@ -233,6 +233,8 @@ export default {
   "Crafting totals use baseline yields, share surplus between repeated dependencies, and stop conversion cycles. Reusable stations are listed separately. Character skill effects, placement conditions, and variable output are flagged.": "材料總量依基礎產量計算，重複需要的材料會共用剩餘產物，並停止循環轉換。可重複使用的製作站另列，也會標示角色技能、放置條件及可變產量。",
   "Coverage & limits": "收錄範圍與限制",
   "Credits": "致謝",
+  "Artwork on wiki.gg": "在 wiki.gg 查看圖片",
+  "Additional item thumbnails are provided by": "其他物品縮圖來自",
   "Don’t Starve Together, its item artwork, and game data belong to Klei Entertainment. This is an unofficial fan reference and is not affiliated with Klei.": "《飢荒聯機版》、物品圖像與遊戲資料屬於 Klei Entertainment。這是非官方玩家指南，與 Klei 無隸屬關係。",
   "Back to the food table": "返回食物一覽",
   "That page wandered off.": "找不到這個頁面。",

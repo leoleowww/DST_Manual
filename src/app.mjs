@@ -2,6 +2,8 @@ import { createModel, cookingOutcomes, characterName as gameCharacter, stationNa
 import { icon } from './icons.mjs';
 import { i18nReady, language, languages, setLanguage, t } from './i18n.mjs';
 import { ruleHTML } from './recipe-rules.mjs';
+import { wikiArtwork } from './wiki-art.mjs';
+import artAliases from '../data/art-aliases.json';
 
 const main = document.querySelector('#main');
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -56,11 +58,33 @@ function recipeRules(rule, combo) {
   return ruleHTML(rule, combo, { data, artHTML, name: model.name, msg, escape, number });
 }
 
-function artHTML(id, extraClass = '') {
-  const key = data.items[id]?.icon || id;
-  if (art.has(key)) return `<img class="item-art ${extraClass}" src="/assets/items/${encodeURIComponent(key)}.png" alt="" width="48" height="48" loading="lazy" decoding="async">`;
-  return `<span class="item-art item-placeholder ${extraClass}" aria-hidden="true">${icon('leaf')}</span>`;
+function artKey(id) {
+  return artAliases[id] || data.items[id]?.icon || id;
 }
+
+function artHTML(id, extraClass = '') {
+  const key = artKey(id);
+  const local = art.has(key);
+  const remote = local ? null : wikiArtwork(id) || wikiArtwork(key);
+  const src = local ? `/assets/items/${encodeURIComponent(key)}.png` : remote?.image;
+  if (!src) return `<span class="item-art item-placeholder ${extraClass}" aria-hidden="true">${icon('leaf')}</span>`;
+  return `<img class="item-art ${extraClass}" src="${escape(src)}" alt="" width="48" height="48" loading="lazy" decoding="async"${remote ? ' data-wiki-art referrerpolicy="no-referrer"' : ''}>`;
+}
+
+function artworkLink(id) {
+  const artwork = wikiArtwork(id) || wikiArtwork(artKey(id));
+  return artwork ? `<a href="${escape(artwork.page)}" target="_blank" rel="noopener noreferrer">${msg('Artwork on wiki.gg')} ${icon('external')}</a>` : '';
+}
+
+main.addEventListener('error', ({ target: image }) => {
+  if (!image.matches?.('img[data-wiki-art]')) return;
+  const fallback = document.createElement('span');
+  fallback.className = image.className;
+  fallback.classList.add('item-placeholder');
+  fallback.setAttribute('aria-hidden', 'true');
+  fallback.innerHTML = icon('leaf');
+  image.replaceWith(fallback);
+}, true);
 
 function number(value, signed = true) {
   if (!Number.isFinite(value)) return '—';
@@ -189,7 +213,7 @@ function verifiedExample(id, cooker) {
 function sourceLinks(id, recipe = data.recipes[id]) {
   const source = recipe ? `${recipe.source}#L${recipe.line}` : data.foods[id]?.base ? 'spicedfoods.lua' : 'screens/redux/scrapbookdata.lua';
   const url = `https://github.com/${data.meta.repository}/blob/${data.meta.revision}/${source}`;
-  return `<div class="source-links"><a href="${escape(url)}" target="_blank" rel="noopener">${msg("Game source")} ${icon('external')}</a><a href="https://dontstarve.wiki.gg/wiki/${encodeURIComponent((data.items[id]?.name || title(id)).replace(/ /g, '_'))}" target="_blank" rel="noopener">${msg("Read more on the wiki")} ${icon('external')}</a></div>`;
+  return `<div class="source-links"><a href="${escape(url)}" target="_blank" rel="noopener">${msg("Game source")} ${icon('external')}</a>${artworkLink(id)}<a href="https://dontstarve.wiki.gg/wiki/${encodeURIComponent((data.items[id]?.name || title(id)).replace(/ /g, '_'))}" target="_blank" rel="noopener">${msg("Read more on the wiki")} ${icon('external')}</a></div>`;
 }
 
 function renderFoodDetail(id) {
@@ -267,12 +291,14 @@ function renderExplorer(id) {
   if (!data.items[id]) { renderMissing(); return; }
   state.explorerId = id;
   const directCount = model.directUses(id, state.cooker).length;
+  const artSource = artworkLink(id);
   main.innerHTML = `${pageHeading('Ingredient explorer', 'Follow what you have to what you can make.')}
     <div class="explorer-search">${searchHTML('ingredient-search', 'Find an ingredient or material…', '', 'Search ingredients and materials')}<div id="ingredient-results" class="search-results" hidden></div>${quickIngredients(true)}</div>
     <div class="explorer-layout"><div class="detail-primary">
       <div class="tree-controls"><p>${msg("Tap a branch to follow the recipe.")}</p><label class="sr-only" for="explorer-cooker">${msg("Cooking station")}</label><select class="select-control" id="explorer-cooker"><option value="cookpot" ${state.cooker === 'cookpot' ? 'selected' : ''}>${msg("Crock Pot")}</option><option value="portablecookpot" ${state.cooker === 'portablecookpot' ? 'selected' : ''}>${msg("Warly’s Portable Pot")}</option></select></div>
       <div class="explorer-heading">${artHTML(id)}<div><h2>${escape(model.name(id))}</h2><p>${id === 'tomato' && language() === 'en' ? 'Tomato · ' : ''}${msg('{{pot}} direct pot recipes · {{prep}} preparation paths · {{craft}} crafting uses', { pot: directCount, prep: model.transforms.get(id)?.length || 0, craft: model.consumers.get(id)?.length || 0 })}</p></div></div>
       <div id="ingredient-tree">${renderTree(id)}</div>
+      ${artSource ? `<div class="source-links">${artSource}</div>` : ''}
     </div><aside class="detail-aside"><h2>${msg("Read the branches")}</h2><p>${msg("Open a result for its ingredients. Keep expanding to follow preparation and crafting into new recipes.")}</p><div class="legend"><div>${tag('Named', 'accent')}<p>${msg("The recipe calls for this item or its prepared form.")}</p></div><div>${tag('Value')}<p>${msg("Your ingredient supplies a required food value, such as vegetable or egg.")}</p></div><div>${tag('Filler')}<p>${msg("It fills a slot while other ingredients meet the recipe’s conditions.")}</p></div></div><div class="info-note">${icon('info')}${msg("A Tallbird Egg counts as 4 egg value. Different items can contribute different amounts.")}</div><p>${msg("Every pot example has four slots and respects recipe priorities. Tied outcomes are marked.")}</p><a class="text-button" href="#about">${msg("About the recipe data")} ${icon('arrow')}</a></aside></div>`;
 }
 
@@ -342,7 +368,7 @@ function renderCraftDetail(id, keepQuantity = false) {
     ${variants.length > 1 ? `<div class="variant-picker"><label for="craft-variant">${msg("Recipe variant")}</label><select class="select-control" id="craft-variant">${variants.map(r => `<option value="${escape(r.id)}" ${r.id === id ? 'selected' : ''}>${escape(characterName(r) ? characterName(r) + ' · ' : '')}${escape(stationName(r.tech))} · ${msg(r.id === r.product ? 'Standard recipe' : title(r.id))}</option>`).join('')}</select></div>` : ''}
     <div id="craft-math" data-craft-id="${escape(id)}"></div>
     <div class="section"><h2>${msg("What uses this?")}</h2><p>${msg("Follow this item into more recipes and refined materials.")}</p><a class="text-button" href="${routeLink('explore', recipe.product)}">${msg("Explore downstream uses")} ${icon('arrow')}</a></div>
-    <div class="source-links"><a href="https://github.com/${data.meta.repository}/blob/${data.meta.revision}/recipes.lua" target="_blank" rel="noopener">${msg("Game crafting source")} ${icon('external')}</a></div>`;
+    <div class="source-links"><a href="https://github.com/${data.meta.repository}/blob/${data.meta.revision}/recipes.lua" target="_blank" rel="noopener">${msg("Game crafting source")} ${icon('external')}</a>${artworkLink(recipe.product)}</div>`;
   renderCraftMath(recipe);
 }
 
@@ -370,7 +396,7 @@ function renderAbout() {
     <section class="section"><h2>${msg("What the numbers mean")}</h2><p>${msg("Food values are for fresh food, per serving, before survivor-specific bonuses, penalties, or Warly’s food memory. Immediate health is used for health sorting. Jellybeans show their additional healing separately. One game day is 480 seconds.")}</p><p>${msg("Base foods hide seasoning variants. Choose All variants to include them, or Seasoned to compare them on their own. Beefalo and special-diet items are available through the food filters.")}</p><p>${msg("Warly labels describe who can prepare a recipe, not who can eat the dish. Each survivor’s dietary restrictions still apply.")}</p></section>
     <section class="section"><h2>${msg("How the paths work")}</h2><p>${msg("Every pot result has a valid four-slot example containing your selected ingredient. The guide checks the highest matching recipe priority for the selected pot. When multiple recipes tie, it shows every possible outcome and its weighted chance.")}</p><p>${msg("Ingredient classes are equivalent only when their named uses and all relevant food values match. The importer checks every four-slot combination of those classes, including repeated ingredients. Raw and prepared forms remain distinct when their recipe behavior differs.")}</p><p>${msg("Crafting totals use baseline yields, share surplus between repeated dependencies, and stop conversion cycles. Reusable stations are listed separately. Character skill effects, placement conditions, and variable output are flagged.")}</p></section>
     <section class="section"><h2>${msg("Coverage & limits")}</h2><ul class="coverage-list">${data.meta.coverage.map(line => `<li>${msg(line)}</li>`).join('')}</ul><p>${msg("Standard recipes in")} <a href="https://github.com/${data.meta.repository}/blob/${data.meta.revision}/recipes.lua" target="_blank" rel="noopener">recipes.lua</a> ${msg("are included. Event menus and character skills may require additional in-game context. Construction-stage costs are shown separately where the source provides a flat construction plan.")}</p></section>
-    <section class="section"><h2>${msg("Credits")}</h2><p>${msg("Don’t Starve Together, its item artwork, and game data belong to Klei Entertainment. This is an unofficial fan reference and is not affiliated with Klei.")}</p><p>${msg("Game scripts are sourced from the")} <a href="https://github.com/${data.meta.repository}" target="_blank" rel="noopener">${msg("CN-DST-DEVELOPER archive")}</a>. ${msg("Original inventory artwork is mirrored from")} <a href="https://github.com/fankimm/dst-craft" target="_blank" rel="noopener">fankimm/dst-craft</a>. ${msg("Fonts: DM Sans and Fraunces, distributed under the SIL Open Font License.")}</p></section>
+    <section class="section"><h2>${msg("Credits")}</h2><p>${msg("Don’t Starve Together, its item artwork, and game data belong to Klei Entertainment. This is an unofficial fan reference and is not affiliated with Klei.")}</p><p>${msg("Game scripts are sourced from the")} <a href="https://github.com/${data.meta.repository}" target="_blank" rel="noopener">${msg("CN-DST-DEVELOPER archive")}</a>. ${msg("Original inventory artwork is mirrored from")} <a href="https://github.com/fankimm/dst-craft" target="_blank" rel="noopener">fankimm/dst-craft</a>. ${msg("Fonts: DM Sans and Fraunces, distributed under the SIL Open Font License.")}</p><p>${msg("Additional item thumbnails are provided by")} <a href="https://dontstarve.wiki.gg/" target="_blank" rel="noopener noreferrer">Don’t Starve Wiki (wiki.gg)</a>.</p></section>
     <a class="text-button" href="#foods">${msg("Back to the food table")} ${icon('arrow')}</a></div>`;
 }
 
